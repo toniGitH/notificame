@@ -20,7 +20,6 @@ use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
 /**
  * Caso de uso para registrar un nuevo usuario en el sistema.
  * 
- * ESTRATEGIA MEJORADA V2:
  * 1. Validar email, password y name usando Value Objects
  * 2. Los VO lanzan excepciones automáticamente si son inválidos
  * 3. Recoger TODOS los errores y lanzar MultipleValidationErrorsException
@@ -78,18 +77,18 @@ final class RegisterUserUseCase implements RegisterUserPort
             throw new MultipleValidationErrorsException($validationErrors);
         }
 
-        // 5. Crear entidad User (que valida automáticamente todos los atributos)
+        // 5. Verificar que el email no esté registrado
+        if ($this->userRepository->exists($email)) {
+            throw new EmailAlreadyExistsException($email->value());
+        }
+
+        // 6. Crear entidad User (que valida automáticamente todos los atributos)
         // NOTA: A este punto, todos los datos están garantizados como válidos
         $user = User::create(
             $name->value(), 
             $email->value(), 
             $password->value()
         );
-
-        // 6. Verificar que el email no esté registrado
-        if ($this->userRepository->exists($email)) {
-            throw new EmailAlreadyExistsException($email->value());
-        }
 
         // 7. Persistir usuario
         $this->userRepository->save($user);

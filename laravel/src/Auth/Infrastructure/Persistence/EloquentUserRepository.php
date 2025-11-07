@@ -20,7 +20,7 @@ final class EloquentUserRepository implements UserRepository
     {
         $eloquentUser = new EloquentUser();
         $eloquentUser->id = $user->id()->value();
-        $eloquentUser->name = $user->name();
+        $eloquentUser->name = $user->name()->value();
         $eloquentUser->email = $user->email()->value();
         // Hasheamos la contraseña explícitamente antes de guardar
         $eloquentUser->password = Hash::make($user->password()->value());

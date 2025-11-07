@@ -11,6 +11,18 @@ use Illuminate\Http\JsonResponse;
 
 /**
  * Request para el registro de usuarios.
+ *  
+ * ESTRATEGIA DE VALIDACIÓN EN DOS CAPAS:
+ * 
+ * 1. RegisterRequest: Primera barrera (HTTP)
+ *    - Filtra peticiones obviamente inválidas
+ *    - Reduce carga en la capa de aplicación
+ *    - Responde rápido al cliente
+ * 
+ * 2. Value Objects: Segunda barrera (Dominio)
+ *    - Garantiza que ningún dato inválido entre al sistema
+ *    - Protege contra llamadas desde otros puntos de entrada
+ *    - Reglas de negocio canónicas
  * 
  * PRIMERA BARRERA DE DEFENSA:
  * Replica TODAS las reglas de validación del dominio para evitar que lleguen
