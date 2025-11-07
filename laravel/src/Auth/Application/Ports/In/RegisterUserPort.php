@@ -18,9 +18,10 @@ interface RegisterUserPort
      * @param array $userData Los datos del usuario a registrar (name, email, password)
      * @return User El usuario registrado
      * 
-     * @throws \Src\Auth\Domain\User\Exceptions\InvalidEmailFormatException Si el email no es válido
-     * @throws \Src\Auth\Domain\User\Exceptions\InvalidUserPasswordException Si la contraseña no cumple requisitos
+     * @throws \Src\Auth\Domain\User\Exceptions\InvalidEmailException Si el email no es válido
+     * @throws \Src\Auth\Domain\User\Exceptions\InvalidPasswordException Si la contraseña no cumple requisitos
      * @throws \Src\Auth\Domain\User\Exceptions\MissingUserNameException Si el nombre está vacío
+     * @throws \Src\Auth\Domain\User\Exceptions\MultipleValidationErrorsException Si hay múltiples errores de validación
      * @throws \Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException Si el email ya existe
      */
     public function execute(array $userData): User;
