@@ -14,7 +14,7 @@ use Illuminate\Http\JsonResponse;
  * Este controlador NO captura excepciones de dominio.
  * Todas las excepciones se manejan automáticamente en el Handler global.
  */
-final class RegisterController
+final class RegisterUserController
 {
     public function __construct(
         private readonly RegisterUserPort $registerUserPort
