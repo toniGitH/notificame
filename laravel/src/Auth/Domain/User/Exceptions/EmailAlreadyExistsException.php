@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Notifier\Auth\Domain\User\Exceptions;
+namespace Src\Auth\Domain\User\Exceptions;
 
-use Exception;
+use Src\Shared\Domain\Exceptions\DomainException;
 
-final class EmailAlreadyExistsException extends Exception
+/**
+ * Se lanza cuando se intenta registrar un email que ya existe en el sistema.
+ * Esta es una excepción de regla de negocio, no de validación de value object.
+ */
+final class EmailAlreadyExistsException extends DomainException
 {
-    public function __construct()
+    public function __construct(string $email)
     {
-        // Solo un mensaje o código interno, sin dependencia de Laravel
-        parent::__construct('EMAIL_ALREADY_EXISTS');
+        parent::__construct(__('messages.user.EMAIL_ALREADY_EXISTS', ['email' => $email]));
     }
 }

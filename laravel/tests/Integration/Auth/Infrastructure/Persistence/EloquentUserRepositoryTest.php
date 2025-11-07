@@ -6,10 +6,10 @@ namespace Tests\Integration\Auth\Infrastructure\Persistence;
 
 use App\Models\User as EloquentUser;
 use Illuminate\Database\QueryException;
-use Notifier\Auth\Domain\User\User;
-use Notifier\Auth\Domain\User\ValueObjects\UserEmail;
-use Notifier\Auth\Domain\User\ValueObjects\UserPassword;
-use Notifier\Auth\Infrastructure\Persistence\EloquentUserRepository;
+use Src\Auth\Domain\User\User;
+use Src\Auth\Domain\User\ValueObjects\UserEmail;
+use Src\Auth\Domain\User\ValueObjects\UserPassword;
+use Src\Auth\Infrastructure\Persistence\EloquentUserRepository;
 use Tests\TestCase;
 
 /**

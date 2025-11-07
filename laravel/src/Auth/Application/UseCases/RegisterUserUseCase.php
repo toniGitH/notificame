@@ -2,50 +2,74 @@
 
 declare(strict_types=1);
 
-namespace Notifier\Auth\Application\UseCases;
+namespace Src\Auth\Application\UseCases;
 
-use Notifier\Auth\Application\Ports\In\RegisterUserPort;
-use Notifier\Auth\Application\Ports\Out\UserRepository;
-use Notifier\Auth\Domain\User\User;
-use Notifier\Auth\Domain\User\ValueObjects\UserEmail;
-use Notifier\Auth\Domain\User\ValueObjects\UserPassword;
-use Notifier\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
-use InvalidArgumentException;
-use RuntimeException;
+use Src\Auth\Application\Ports\In\RegisterUserPort;
+use Src\Auth\Application\Ports\Out\UserRepository;
+use Src\Auth\Domain\User\User;
+use Src\Auth\Domain\User\ValueObjects\UserEmail;
+use Src\Auth\Domain\User\ValueObjects\UserPassword;
+use Src\Auth\Domain\User\Exceptions\InvalidEmailException;
+use Src\Auth\Domain\User\Exceptions\InvalidPasswordException;
+use Src\Auth\Domain\User\Exceptions\MultipleValidationErrorsException;
+use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
 
+/**
+ * Caso de uso para registrar un nuevo usuario en el sistema.
+ * 
+ * Estrategia de validación:
+ * 1. Valida TODOS los campos (name, email, password) y acumula errores
+ * 2. Si hay errores, lanza MultipleValidationErrorsException con TODOS
+ * 3. Si no hay errores, verifica email duplicado
+ * 4. Crea y persiste el usuario
+ */
 final class RegisterUserUseCase implements RegisterUserPort
 {
     public function __construct(
-        private UserRepository $userRepository
+        private readonly UserRepository $userRepository
     ) {}
 
     public function execute(array $userData): User
     {
-        // Validación básica de campos requeridos
-        if (!isset($userData['name'], $userData['email'], $userData['password'])) {
-            throw new InvalidArgumentException('Missing required fields');
+        $validationErrors = [];
+        $email = null;
+        $password = null;
+        $name = null;
+
+        // 1. Validar nombre
+        $name = trim($userData['name'] ?? '');
+        if ($name === '') {
+            $validationErrors['name'] = [__('messages.user.MISSING_USER_NAME')];
         }
 
-        // Crear el Value Object de email
-        $email = UserEmail::fromString($userData['email']);
+        // 2. Validar email
+        try {
+            $email = UserEmail::fromString($userData['email'] ?? '');
+        } catch (InvalidEmailException $e) {
+            $validationErrors['email'] = [$e->getMessage()];
+        }
 
-        // Verificar si el email ya existe
+        // 3. Validar password
+        try {
+            $password = UserPassword::fromString($userData['password'] ?? '');
+        } catch (InvalidPasswordException $e) {
+            $validationErrors['password'] = $e->getErrors();
+        }
+
+        // 4. Si hay errores de validación, lanzar excepción con TODOS
+        if (!empty($validationErrors)) {
+            throw new MultipleValidationErrorsException($validationErrors);
+        }
+
+        // 5. Verificar que el email no esté registrado
         if ($this->userRepository->exists($email)) {
-            throw new EmailAlreadyExistsException();
+            throw new EmailAlreadyExistsException($email->value());
         }
 
-          // Crear Value Object de password (con validación y hash interno)
-        $passwordVO = UserPassword::fromString($userData['password']);
+        // 6. Crear entidad User
+        $user = User::create($name, $email, $password);
 
-        // Crear usuario (entidad de dominio, no Model Eloquent)
-        // Las validaciones de formato se hacen en los Value Objects
-        $user = User::create(
-            $userData['name'],
-            $email,
-            $passwordVO
-        );
-
-        // Persistir usuario
+        // 7. Persistir usuario
         $this->userRepository->save($user);
 
         return $user;

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Notifier\Auth\Domain\User\ValueObjects;
+namespace Src\Auth\Domain\User\ValueObjects;
 
-use InvalidArgumentException;
+use Src\Auth\Domain\User\Exceptions\InvalidUserIdException;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Value Object para el ID del usuario
+ * Value Object para el ID del usuario.
+ * Representa un identificador único UUID v4.
  */
 final class UserId
 {
-    private function __construct(
-        private string $value
-    ) {
+    private function __construct(private string $value)
+    {
         $this->ensureIsValidUuid($value);
     }
 
@@ -35,10 +35,17 @@ final class UserId
 
     private function ensureIsValidUuid(string $value): void
     {
+        if (empty(trim($value))) {
+            throw new InvalidUserIdException(__('messages.user.EMPTY_USER_ID'));
+        }
+
         if (!Uuid::isValid($value)) {
-            throw new InvalidArgumentException(
-                sprintf('<%s> does not allow the value <%s>.', static::class, $value)
-            );
+            throw new InvalidUserIdException(__('messages.user.INVALID_USER_ID_FORMAT', ['value' => $value]));
+        }
+
+        // Validar versión 4 explícitamente (tercer bloque empieza por '4')
+        if (!preg_match('/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/', $value)) {
+            throw new InvalidUserIdException(__('messages.user.INVALID_USER_ID_FORMAT', ['value' => $value]));
         }
     }
 

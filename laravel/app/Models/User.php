@@ -9,6 +9,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Modelo Eloquent de User.
+ * Este es el modelo de infraestructura (ORM), no confundir con la entidad de dominio.
+ * 
+ * @property string $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasUuids;
@@ -29,10 +42,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        "id",
-        "name",
-        "email",
-        "password",
+        'id',
+        'name',
+        'email',
+        'password',
     ];
 
     /**
@@ -41,8 +54,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        "password",
-        "remember_token",
+        'password',
+        'remember_token',
     ];
 
     /**
@@ -50,8 +63,11 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected $casts = [
-        "email_verified_at" => "datetime",
-        "password" => "hashed",
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 }

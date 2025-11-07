@@ -2,48 +2,26 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validation Messages
-    |--------------------------------------------------------------------------
-    */
     'validation' => [
         'error' => 'Validation error. Please check the provided fields.',
-        'name_required' => 'The name field is required.',
-        'name_min' => 'The name must be at least 3 characters.',
-        'email_required' => 'The email field is required.',
-        'email_invalid' => 'Please enter a valid email address.',
-        'password_required' => 'The password field is required.',
-        'password_min' => 'The password must be at least 8 characters.',
-        'password_confirmation' => 'The password confirmation does not match.',
-        'password_strength' => 'The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | User Messages
-    |--------------------------------------------------------------------------
-    */
     'user' => [
         'registered_success' => 'User registered successfully.',
-        'email_already_exists' => 'The email is already registered.',
-        'empty_id' => 'Internal error: User ID not generated.',
+        'EMAIL_ALREADY_EXISTS' => 'The email :email is already registered.',
+        'EMPTY_USER_ID' => 'Internal error: User ID not generated.',
+        'INVALID_USER_ID_FORMAT' => 'The user ID has an invalid format: :value',
+        'INVALID_EMAIL_FORMAT' => 'The email address :email has an invalid format.',
+        'MISSING_USER_NAME' => 'The user name is required.',
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Error Messages
-    |--------------------------------------------------------------------------
-    */
-    'errors' => [
-        'email_already_exists' => 'Duplicate email',
+    'password' => [
+        'PASSWORD_TOO_SHORT' => 'The password must be at least :min characters long.',
+        'PASSWORD_MISSING_UPPERCASE' => 'The password must contain at least one uppercase letter.',
+        'PASSWORD_MISSING_LOWERCASE' => 'The password must contain at least one lowercase letter.',
+        'PASSWORD_MISSING_NUMBER' => 'The password must contain at least one number.',
+        'PASSWORD_MISSING_SPECIAL' => 'The password must contain at least one special character (@$!%*?&).',
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | General System Messages
-    |--------------------------------------------------------------------------
-    */
     'unexpected_error' => 'An unexpected error has occurred. Please try again later.',
-
 ];

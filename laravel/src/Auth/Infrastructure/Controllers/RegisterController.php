@@ -2,59 +2,40 @@
 
 declare(strict_types=1);
 
-namespace Notifier\Auth\Infrastructure\Controllers;
+namespace Src\Auth\Infrastructure\Controllers;
 
 use App\Http\Requests\Auth\RegisterRequest;
-use Notifier\Auth\Application\Ports\In\RegisterUserPort;
+use Src\Auth\Application\Ports\In\RegisterUserPort;
 use Illuminate\Http\JsonResponse;
-use InvalidArgumentException;
-use Notifier\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
-use Notifier\Auth\Domain\User\Exceptions\EmptyUserIdException;
 
+/**
+ * Controlador para el registro de nuevos usuarios.
+ * 
+ * Este controlador NO captura excepciones de dominio.
+ * Todas las excepciones se manejan automáticamente en el Handler global.
+ */
 final class RegisterController
 {
     public function __construct(
-        private RegisterUserPort $registerUsePort
+        private readonly RegisterUserPort $registerUserPort
     ) {}
 
     public function __invoke(RegisterRequest $request): JsonResponse
     {
-        try {
-            $validatedData = $request->validated();
+        // Los datos ya están validados por RegisterRequest (validaciones básicas de Laravel)
+        $validatedData = $request->validated();
+        
+        // El caso de uso maneja la lógica de negocio y lanza excepciones si es necesario
+        // Esas excepciones serán capturadas automáticamente por el Handler global
+        $user = $this->registerUserPort->execute($validatedData);
 
-            $user = $this->registerUsePort->execute($validatedData);
-
-            return new JsonResponse([
-                'message' => trans('messages.user.registered_success'),
-                'user' => [
-                    'id' => $user->id()->value(),
-                    'name' => $user->name(),
-                    'email' => $user->email()->value(),
-                ]
-            ], 201);
-        } catch (InvalidArgumentException $e) {
-            $message = $e->getMessage();
-            
-            $translationKey = match($message) {
-                'Email must contain a dot.' => 'validation.email.missing_dot',
-                default => null
-            };
-            
-            return new JsonResponse([
-                'message' => trans('messages.validation.error'),
-                'errors' => ['validation' => [
-                    $translationKey ? trans($translationKey, ['attribute' => 'email']) : $message
-                ]]
-            ], 422);
-        } catch (EmailAlreadyExistsException $e) {
-            return new JsonResponse([
-                'error' => trans('messages.user.email_already_exists')
-            ], 409);
-        } catch (EmptyUserIdException $e) {
-            return new JsonResponse([
-                'message' => $e->getMessage(),
-                'error' => 'INTERNAL_SERVER_ERROR'
-            ], 500);
-        }
+        return new JsonResponse([
+            'message' => __('messages.user.registered_success'),
+            'user' => [
+                'id' => $user->id()->value(),
+                'name' => $user->name(),
+                'email' => $user->email()->value(),
+            ]
+        ], 201);
     }
 }

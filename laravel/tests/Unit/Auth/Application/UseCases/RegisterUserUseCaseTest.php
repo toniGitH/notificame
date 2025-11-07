@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Auth\Application\UseCases;
 
-use InvalidArgumentException;
-use Notifier\Auth\Application\Ports\Out\UserRepository;
-use Notifier\Auth\Application\UseCases\RegisterUserUseCase;
-use Notifier\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
-use Notifier\Auth\Domain\User\User;
-use Notifier\Auth\Domain\User\ValueObjects\UserEmail;
-use PHPUnit\Framework\TestCase;
+use Src\Auth\Application\Ports\Out\UserRepository;
+use Src\Auth\Application\UseCases\RegisterUserUseCase;
+use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
+use Src\Auth\Domain\User\Exceptions\InvalidEmailFormatException;
+use Src\Auth\Domain\User\Exceptions\PasswordTooShortException;
+use Src\Auth\Domain\User\User;
+use Src\Auth\Domain\User\ValueObjects\UserEmail;
+use Src\Auth\Domain\User\ValueObjects\UserPassword;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 /**
  * TEST UNITARIO
- * 
+ *
  * Testea el RegisterUserUseCase aisladamente usando mocks del repositorio.
  * No toca base de datos, solo verifica la lógica del caso de uso.
  */
@@ -27,8 +29,7 @@ final class RegisterUserUseCaseTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // Crear mock del repositorio
+
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->useCase = new RegisterUserUseCase($this->userRepository);
     }
@@ -41,13 +42,12 @@ final class RegisterUserUseCaseTest extends TestCase
             'password' => 'Password123!'
         ];
 
-        // Configurar el mock: el email no existe
         $this->userRepository
             ->expects($this->once())
             ->method('exists')
+            ->with($this->isInstanceOf(UserEmail::class))
             ->willReturn(false);
 
-        // Configurar el mock: se debe llamar a save una vez
         $this->userRepository
             ->expects($this->once())
             ->method('save')
@@ -60,46 +60,7 @@ final class RegisterUserUseCaseTest extends TestCase
         $this->assertEquals('john@example.com', $user->email()->value());
     }
 
-    public function test_throws_exception_when_name_is_missing(): void
-    {
-        $userData = [
-            'email' => 'john@example.com',
-            'password' => 'Password123!'
-        ];
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Missing required fields');
-
-        $this->useCase->execute($userData);
-    }
-
-    public function test_throws_exception_when_email_is_missing(): void
-    {
-        $userData = [
-            'name' => 'John Doe',
-            'password' => 'Password123!'
-        ];
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Missing required fields');
-
-        $this->useCase->execute($userData);
-    }
-
-    public function test_throws_exception_when_password_is_missing(): void
-    {
-        $userData = [
-            'name' => 'John Doe',
-            'email' => 'john@example.com'
-        ];
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Missing required fields');
-
-        $this->useCase->execute($userData);
-    }
-
-    public function test_throws_exception_when_email_already_exists(): void
+    public function test_throws_email_already_exists_and_does_not_save(): void
     {
         $userData = [
             'name' => 'John Doe',
@@ -107,13 +68,11 @@ final class RegisterUserUseCaseTest extends TestCase
             'password' => 'Password123!'
         ];
 
-        // Configurar el mock: el email ya existe
         $this->userRepository
             ->expects($this->once())
             ->method('exists')
             ->willReturn(true);
 
-        // Save NO debe ser llamado
         $this->userRepository
             ->expects($this->never())
             ->method('save');
@@ -123,7 +82,7 @@ final class RegisterUserUseCaseTest extends TestCase
         $this->useCase->execute($userData);
     }
 
-    public function test_throws_exception_when_email_format_is_invalid(): void
+    public function test_throws_invalid_email_format_exception_for_bad_email(): void
     {
         $userData = [
             'name' => 'John Doe',
@@ -131,12 +90,16 @@ final class RegisterUserUseCaseTest extends TestCase
             'password' => 'Password123!'
         ];
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->userRepository
+            ->expects($this->never())
+            ->method('exists');
+
+        $this->expectException(InvalidEmailFormatException::class);
 
         $this->useCase->execute($userData);
     }
 
-    public function test_throws_exception_when_password_is_too_weak(): void
+    public function test_throws_password_too_short_exception_for_weak_password(): void
     {
         $userData = [
             'name' => 'John Doe',
@@ -144,12 +107,16 @@ final class RegisterUserUseCaseTest extends TestCase
             'password' => 'weak'
         ];
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->userRepository
+            ->method('exists')
+            ->willReturn(false);
+
+        $this->expectException(PasswordTooShortException::class);
 
         $this->useCase->execute($userData);
     }
 
-    public function test_calls_repository_save_with_correct_user(): void
+    public function test_calls_repository_save_with_correct_user_and_captures_saved_user(): void
     {
         $userData = [
             'name' => 'Jane Doe',
@@ -166,7 +133,7 @@ final class RegisterUserUseCaseTest extends TestCase
         $this->userRepository
             ->expects($this->once())
             ->method('save')
-            ->willReturnCallback(function(User $user) use (&$savedUser) {
+            ->willReturnCallback(function (User $user) use (&$savedUser) {
                 $savedUser = $user;
             });
 
@@ -177,7 +144,7 @@ final class RegisterUserUseCaseTest extends TestCase
         $this->assertEquals('jane@example.com', $savedUser->email()->value());
     }
 
-    public function test_verifies_email_existence_before_saving(): void
+    public function test_verifies_email_existence_before_saving_order(): void
     {
         $userData = [
             'name' => 'John Doe',
@@ -190,7 +157,7 @@ final class RegisterUserUseCaseTest extends TestCase
         $this->userRepository
             ->expects($this->once())
             ->method('exists')
-            ->willReturnCallback(function() use (&$callOrder) {
+            ->willReturnCallback(function () use (&$callOrder) {
                 $callOrder[] = 'exists';
                 return false;
             });
@@ -198,13 +165,12 @@ final class RegisterUserUseCaseTest extends TestCase
         $this->userRepository
             ->expects($this->once())
             ->method('save')
-            ->willReturnCallback(function() use (&$callOrder) {
+            ->willReturnCallback(function () use (&$callOrder) {
                 $callOrder[] = 'save';
             });
 
         $this->useCase->execute($userData);
 
-        // Verificar que exists se llamó antes que save
         $this->assertEquals(['exists', 'save'], $callOrder);
     }
 

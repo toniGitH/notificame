@@ -2,19 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Notifier\Auth\Application\Ports\In;
+namespace Src\Auth\Application\Ports\In;
 
-use Notifier\Auth\Domain\User\User;
+use Src\Auth\Domain\User\User;
 
+/**
+ * Puerto de entrada para el caso de uso de registro de usuario.
+ * Define el contrato que debe cumplir el caso de uso.
+ */
 interface RegisterUserPort
 {
     /**
-     * Registra un nuevo usuario en el sistema
+     * Registra un nuevo usuario en el sistema.
      *
-     * @param array $userData Los datos del usuario a registrar
+     * @param array $userData Los datos del usuario a registrar (name, email, password)
      * @return User El usuario registrado
-     * @throws \InvalidArgumentException Si los datos son inválidos
-     * @throws \DomainException Si el email ya existe
+     * 
+     * @throws \Src\Auth\Domain\User\Exceptions\InvalidEmailFormatException Si el email no es válido
+     * @throws \Src\Auth\Domain\User\Exceptions\InvalidUserPasswordException Si la contraseña no cumple requisitos
+     * @throws \Src\Auth\Domain\User\Exceptions\MissingUserNameException Si el nombre está vacío
+     * @throws \Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException Si el email ya existe
      */
     public function execute(array $userData): User;
 }

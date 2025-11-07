@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Src\Shared\Infrastructure\Laravel\Exceptions\Handler as DomainExceptionHandler;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,5 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Registrar el manejador de excepciones de dominio (DomainExceptionHandler)
+        $exceptions->renderable(function (Throwable $e, Request $request) {
+            $handler = app(DomainExceptionHandler::class);
+            return $handler->render($request, $e);
+        });
     })->create();

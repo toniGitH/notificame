@@ -1,6 +1,6 @@
 <?php
 
-use Notifier\Auth\Infrastructure\Controllers\RegisterController;
+use Src\Auth\Infrastructure\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes

@@ -2,20 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Notifier\Auth\Domain\User\ValueObjects;
+namespace Src\Auth\Domain\User\ValueObjects;
 
-use InvalidArgumentException;
+use Src\Auth\Domain\User\Exceptions\InvalidPasswordException;
 
 /**
- * Value Object para la contraseña del usuario
+ * Value Object para la contraseña del usuario.
+ * Representa una contraseña segura que cumple con los requisitos de seguridad.
+ * 
+ * Valida TODAS las reglas y acumula TODOS los errores antes de lanzar la excepción.
  */
 final class UserPassword
 {
     private const MIN_LENGTH = 8;
 
-    private function __construct(
-        private string $value
-    ) {
+    private function __construct(private string $value)
+    {
         $this->ensureIsValidPassword($value);
     }
 
@@ -31,33 +33,35 @@ final class UserPassword
 
     private function ensureIsValidPassword(string $value): void
     {
+        $errors = [];
+
+        // Recolectar TODOS los errores antes de lanzar excepción
         if (strlen($value) < self::MIN_LENGTH) {
-            throw new InvalidArgumentException(
-                sprintf('Password must be at least %d characters long', self::MIN_LENGTH)
-            );
+            $errors[] = __('messages.password.PASSWORD_TOO_SHORT', ['min' => self::MIN_LENGTH]);
         }
 
         if (!preg_match('/[A-Z]/', $value)) {
-            throw new InvalidArgumentException('Password must contain at least one uppercase letter');
+            $errors[] = __('messages.password.PASSWORD_MISSING_UPPERCASE');
         }
 
         if (!preg_match('/[a-z]/', $value)) {
-            throw new InvalidArgumentException('Password must contain at least one lowercase letter');
+            $errors[] = __('messages.password.PASSWORD_MISSING_LOWERCASE');
         }
 
         if (!preg_match('/[0-9]/', $value)) {
-            throw new InvalidArgumentException('Password must contain at least one number');
+            $errors[] = __('messages.password.PASSWORD_MISSING_NUMBER');
         }
 
-        if (!preg_match('/[^A-Za-z0-9]/', $value)) {
-            throw new InvalidArgumentException('Password must contain at least one special character');
+        if (!preg_match('/[@$!%*?&]/', $value)) {
+            $errors[] = __('messages.password.PASSWORD_MISSING_SPECIAL');
+        }
+
+        // Si hay errores, lanzar excepción con TODOS los mensajes
+        if (!empty($errors)) {
+            throw new InvalidPasswordException($errors);
         }
     }
 
-    /**
-     * Nota: Este método ahora solo verifica si la contraseña proporcionada coincide con el valor sin hashear
-     * Para comparar con un hash, usar password_verify directamente
-     */
     public function equals(string $password): bool
     {
         return $this->value === $password;

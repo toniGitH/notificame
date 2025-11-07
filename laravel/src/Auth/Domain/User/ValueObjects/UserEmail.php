@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Notifier\Auth\Domain\User\ValueObjects;
+namespace Src\Auth\Domain\User\ValueObjects;
 
-use InvalidArgumentException;
+use Src\Auth\Domain\User\Exceptions\InvalidEmailException;
 
 /**
- * Value Object para el email del usuario
+ * Value Object para el email del usuario.
+ * Representa una dirección de correo electrónico válida.
  */
 final class UserEmail
 {
@@ -28,16 +29,14 @@ final class UserEmail
 
     private function ensureIsValidEmail(string $value): void
     {
-        if (!str_contains($value, '.')) {
-            throw new InvalidArgumentException('Email must contain a dot.');
-        }
-
-        if (!str_contains($value, '@')) {
-            throw new InvalidArgumentException('Email must contain an "@" symbol.');
-        }
-
+        // Validación de formato email
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException('Email format is invalid.');
+            throw new InvalidEmailException($value);
+        }
+
+        // Validación adicional: debe contener un punto en el dominio
+        if (!str_contains($value, '.')) {
+            throw new InvalidEmailException($value);
         }
     }
 

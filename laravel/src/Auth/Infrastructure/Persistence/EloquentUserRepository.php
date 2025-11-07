@@ -2,14 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Notifier\Auth\Infrastructure\Persistence;
+namespace Src\Auth\Infrastructure\Persistence;
 
-use Notifier\Auth\Application\Ports\Out\UserRepository;
-use Notifier\Auth\Domain\User\User;
-use Notifier\Auth\Domain\User\ValueObjects\UserEmail;
-use Notifier\Auth\Domain\User\Exceptions\EmptyUserIdException;
+use Src\Auth\Application\Ports\Out\UserRepository;
+use Src\Auth\Domain\User\User;
+use Src\Auth\Domain\User\ValueObjects\UserEmail;
 use App\Models\User as EloquentUser;
+use Illuminate\Support\Facades\Hash;
 
+/**
+ * Implementación del repositorio de usuarios usando Eloquent.
+ * Actúa como adaptador entre el dominio y la base de datos.
+ */
 final class EloquentUserRepository implements UserRepository
 {
     public function save(User $user): void
@@ -18,7 +22,8 @@ final class EloquentUserRepository implements UserRepository
         $eloquentUser->id = $user->id()->value();
         $eloquentUser->name = $user->name();
         $eloquentUser->email = $user->email()->value();
-        $eloquentUser->password = $user->password()->value(); // Usamos el valor sin hashear
+        // Hasheamos la contraseña explícitamente antes de guardar
+        $eloquentUser->password = Hash::make($user->password()->value());
         $eloquentUser->save();
     }
 
