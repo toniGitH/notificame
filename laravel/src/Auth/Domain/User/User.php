@@ -7,37 +7,43 @@ namespace Src\Auth\Domain\User;
 use Src\Auth\Domain\User\ValueObjects\UserEmail;
 use Src\Auth\Domain\User\ValueObjects\UserId;
 use Src\Auth\Domain\User\ValueObjects\UserPassword;
+use Src\Auth\Domain\User\ValueObjects\UserName;
 
 /**
  * Entidad User del contexto Auth.
  * Representa un usuario registrado en el sistema.
  * 
- * NOTA: La validación del nombre se realiza en el caso de uso,
- * no en la entidad, para poder acumular todos los errores.
+ * GARANTIZA INTEGRIDAD COMPLETA: Todos sus atributos son válidos por construcción.
+ * No permite la creación de entidades con datos inválidos.
  */
 final class User
 {
     private function __construct(
         private UserId $id,
-        private string $name,
+        private UserName $name,
         private UserEmail $email,
         private UserPassword $password
     ) {}
 
     /**
      * Crea un nuevo usuario.
-     * La validación del nombre debe hacerse ANTES de llamar a este método.
      * 
-     * @param string $name Nombre del usuario (ya validado)
-     * @param UserEmail $email Email del usuario
-     * @param UserPassword $password Contraseña del usuario
+     * NOTA: Este método garantiza que solo se crearán entidades válidas.
+     * Si algún parámetro es inválido, se lanzará la excepción correspondiente.
+     * 
+     * @param string $name Nombre del usuario
+     * @param string $email Email del usuario  
+     * @param string $password Contraseña del usuario
      * @return self
      */
-    public static function create(string $name, UserEmail $email, UserPassword $password): self
+    public static function create(string $name, string $email, string $password): self
     {
         $id = UserId::generate();
+        $userName = UserName::fromString($name);
+        $userEmail = UserEmail::fromString($email);
+        $userPassword = UserPassword::fromString($password);
         
-        return new self($id, $name, $email, $password);
+        return new self($id, $userName, $userEmail, $userPassword);
     }
 
     public function id(): UserId
@@ -45,9 +51,24 @@ final class User
         return $this->id;
     }
 
-    public function name(): string
+    /**
+     * Retorna el UserName Value Object.
+     * 
+     * @return UserName
+     */
+    public function name(): UserName
     {
         return $this->name;
+    }
+
+    /**
+     * Retorna el nombre como string (método de conveniencia).
+     * 
+     * @return string
+     */
+    public function nameValue(): string
+    {
+        return $this->name->value();
     }
 
     public function email(): UserEmail
@@ -64,7 +85,7 @@ final class User
     {
         return [
             'id' => $this->id->value(),
-            'name' => $this->name,
+            'name' => $this->name->value(),
             'email' => $this->email->value(),
             'password' => $this->password->value()
         ];
