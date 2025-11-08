@@ -16,8 +16,11 @@ use Illuminate\Routing\Controller;
  */
 final class RegisterUserController extends Controller
 {
-    public function __construct(private readonly RegisterUserPort $registerUserPort)
+    private readonly RegisterUserPort $registerUserPort;
+
+    public function __construct(RegisterUserPort $registerUserPort)
     {
+        $this->registerUserPort = $registerUserPort;
     }
 
     /**
