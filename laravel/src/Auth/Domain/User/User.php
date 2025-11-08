@@ -9,13 +9,6 @@ use Src\Auth\Domain\User\ValueObjects\UserId;
 use Src\Auth\Domain\User\ValueObjects\UserPassword;
 use Src\Auth\Domain\User\ValueObjects\UserName;
 
-/**
- * Entidad User del contexto Auth.
- * Representa un usuario registrado en el sistema.
- * 
- * GARANTIZA INTEGRIDAD COMPLETA: Todos sus atributos son válidos por construcción.
- * No permite la creación de entidades con datos inválidos.
- */
 final class User
 {
     private function __construct(
@@ -26,24 +19,21 @@ final class User
     ) {}
 
     /**
-     * Crea un nuevo usuario.
+     * Crea un nuevo usuario a partir de Value Objects ya validados.
      * 
-     * NOTA: Este método garantiza que solo se crearán entidades válidas.
-     * Si algún parámetro es inválido, se lanzará la excepción correspondiente.
-     * 
-     * @param string $name Nombre del usuario
-     * @param string $email Email del usuario  
-     * @param string $password Contraseña del usuario
+     * @param UserName $name
+     * @param UserEmail $email
+     * @param UserPassword $password
      * @return self
      */
-    public static function create(string $name, string $email, string $password): self
-    {
+    public static function create(
+        UserName $name,
+        UserEmail $email,
+        UserPassword $password
+    ): self {
         $id = UserId::generate();
-        $userName = UserName::fromString($name);
-        $userEmail = UserEmail::fromString($email);
-        $userPassword = UserPassword::fromString($password);
         
-        return new self($id, $userName, $userEmail, $userPassword);
+        return new self($id, $name, $email, $password);
     }
 
     public function id(): UserId
@@ -51,21 +41,11 @@ final class User
         return $this->id;
     }
 
-    /**
-     * Retorna el UserName Value Object.
-     * 
-     * @return UserName
-     */
     public function name(): UserName
     {
         return $this->name;
     }
 
-    /**
-     * Retorna el nombre como string (método de conveniencia).
-     * 
-     * @return string
-     */
     public function nameValue(): string
     {
         return $this->name->value();

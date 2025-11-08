@@ -12,12 +12,6 @@ use Src\Auth\Domain\User\ValueObjects\UserPassword;
 use Src\Auth\Domain\User\ValueObjects\UserName;
 use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
 
-/**
- * Caso de uso para registrar un nuevo usuario en el sistema.
- * 
- * IMPORTANTE: Las excepciones de los Value Objects suben automáticamente
- * al Handler global que las normaliza al formato estándar.
- */
 final class RegisterUserUseCase implements RegisterUserPort
 {
     public function __construct(
@@ -27,9 +21,9 @@ final class RegisterUserUseCase implements RegisterUserPort
     public function execute(array $userData): User
     {
         // 1. Crear Value Objects (lanzan excepciones automáticamente si inválidos)
+        $name = UserName::fromString($userData['name'] ?? '');
         $email = UserEmail::fromString($userData['email'] ?? '');
         $password = UserPassword::fromString($userData['password'] ?? '');
-        $name = UserName::fromString($userData['name'] ?? '');
 
         // 2. Verificar que el email no esté registrado
         if ($this->userRepository->exists($email)) {
@@ -37,11 +31,7 @@ final class RegisterUserUseCase implements RegisterUserPort
         }
 
         // 3. Crear entidad User
-        $user = User::create(
-            $name->value(), 
-            $email->value(), 
-            $password->value()
-        );
+        $user = User::create($name, $email, $password);
 
         // 4. Persistir usuario
         $this->userRepository->save($user);
