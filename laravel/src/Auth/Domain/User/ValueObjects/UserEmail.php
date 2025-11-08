@@ -6,15 +6,15 @@ namespace Src\Auth\Domain\User\ValueObjects;
 
 use Src\Auth\Domain\User\Exceptions\InvalidEmailException;
 
-/**
- * Value Object para el email del usuario.
- * Representa una dirección de correo electrónico válida.
- */
 final class UserEmail
 {
-    private function __construct(private string $value)
+    private string $value;
+
+    private function __construct(string $value)
     {
+        $value = trim($value);
         $this->ensureIsValidEmail($value);
+        $this->value = $value;
     }
 
     public static function fromString(string $value): self
@@ -22,26 +22,15 @@ final class UserEmail
         return new self($value);
     }
 
+    private function ensureIsValidEmail(string $email): void
+    {
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidEmailException($email);
+        }
+    }
+
     public function value(): string
     {
         return $this->value;
-    }
-
-    private function ensureIsValidEmail(string $value): void
-    {
-        // Validación de formato email
-        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidEmailException($value);
-        }
-
-        // Validación adicional: debe contener un punto en el dominio
-        if (!str_contains($value, '.')) {
-            throw new InvalidEmailException($value);
-        }
-    }
-
-    public function equals(UserEmail $other): bool
-    {
-        return $this->value === $other->value;
     }
 }
