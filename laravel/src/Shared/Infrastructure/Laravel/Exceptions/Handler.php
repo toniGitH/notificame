@@ -12,6 +12,9 @@ use Throwable;
 
 use Src\Auth\Domain\User\Exceptions\InvalidValueObjectException;
 use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
+use Src\Auth\Domain\User\Exceptions\EmptyEmailException;
+use Src\Auth\Domain\User\Exceptions\EmptyPasswordException;
+use Src\Auth\Domain\User\Exceptions\EmptyUserNameException;
 use Src\Shared\Domain\Exceptions\DomainException;
 
 final class Handler
@@ -27,7 +30,7 @@ final class Handler
             );
         }
 
-        // 2) Email duplicado - ERROR 422
+        // 2) Email duplicado
         if ($e instanceof EmailAlreadyExistsException) {
             return $this->errorResponse(
                 __('messages.validation.error'), 
@@ -70,25 +73,19 @@ final class Handler
         ], $statusCode);
     }
 
-    /**
-     * Mapea el tipo de excepción al campo correspondiente.
-     */
     private function guessFieldFromException(Throwable $e): string
     {
         $className = class_basename($e);
         
         return match($className) {
-            'InvalidEmailException' => 'email',
-            'InvalidPasswordException' => 'password',
-            'InvalidUserNameException', 'MissingUserNameException' => 'name',
+            'InvalidEmailException', 'EmptyEmailException' => 'email',
+            'InvalidPasswordException', 'EmptyPasswordException' => 'password',
+            'InvalidUserNameException', 'EmptyUserNameException' => 'name',
             'InvalidUserIdException' => 'id',
             default => $this->guessFieldFromMessage($e->getMessage())
         };
     }
 
-    /**
-     * Heurística para adivinar el campo desde el mensaje.
-     */
     private function guessFieldFromMessage(string $message): string
     {
         $lower = mb_strtolower($message);
@@ -101,7 +98,7 @@ final class Handler
             return 'password';
         }
 
-        if (str_contains($lower, 'nombre')) {
+        if (str_contains($lower, 'nombre') || str_contains($lower, 'name')) {
             return 'name';
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Src\Auth\Domain\User\ValueObjects;
 
+use Src\Auth\Domain\User\Exceptions\EmptyEmailException;
 use Src\Auth\Domain\User\Exceptions\InvalidEmailException;
 
 final class UserEmail
@@ -24,7 +25,13 @@ final class UserEmail
 
     private function ensureIsValidEmail(string $email): void
     {
-        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        // Primero verificar si está vacío
+        if (empty($email)) {
+            throw new EmptyEmailException();
+        }
+        
+        // Luego verificar formato
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidEmailException($email);
         }
     }

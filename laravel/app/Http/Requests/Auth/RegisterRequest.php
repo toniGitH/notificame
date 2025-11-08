@@ -19,14 +19,14 @@ final class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'min:3', 'max:50'],
+            'name' => ['required', 'string', 'min:3', 'max:100'],
             'email' => ['required', 'string', 'email:rfc,dns', 'max:100'],
             'password' => [
                 'required',
                 'string',
                 'min:8',
                 'max:50',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|;:\'",.<>\/?¿]).+$/',
                 'confirmed',
             ],
         ];
@@ -35,22 +35,22 @@ final class RegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            // Name - mensaje único consolidado
-            'name.required' => __('messages.user.INVALID_USER_NAME'),
+            // Name
+            'name.required' => __('messages.user.EMPTY_NAME'),
             'name.min' => __('messages.user.INVALID_USER_NAME'),
             'name.max' => __('messages.user.INVALID_USER_NAME'),
 
-            // Email - mensaje único consolidado
-            'email.required' => __('messages.user.INVALID_EMAIL_FORMAT'),
+            // Email
+            'email.required' => __('messages.user.EMPTY_EMAIL'),
             'email.email' => __('messages.user.INVALID_EMAIL_FORMAT'),
             'email.max' => __('messages.user.INVALID_EMAIL_FORMAT'),
 
-            // Password - mensaje único consolidado
-            'password.required' => __('messages.user.INVALID_PASSWORD'),
+            // Password
+            'password.required' => __('messages.user.EMPTY_PASSWORD'),
             'password.min' => __('messages.user.INVALID_PASSWORD'),
             'password.max' => __('messages.user.INVALID_PASSWORD'),
             'password.regex' => __('messages.user.INVALID_PASSWORD'),
-            'password.confirmed' => __('messages.user.INVALID_PASSWORD'),
+            'password.confirmed' => __('messages.user.PASSWORD_CONFIRMATION_MISMATCH'), // ⚠️ ESPECÍFICO
         ];
     }
 

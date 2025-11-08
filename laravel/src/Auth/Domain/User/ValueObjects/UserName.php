@@ -4,17 +4,9 @@ declare(strict_types=1);
 
 namespace Src\Auth\Domain\User\ValueObjects;
 
+use Src\Auth\Domain\User\Exceptions\EmptyUserNameException;
 use Src\Auth\Domain\User\Exceptions\InvalidUserNameException;
 
-/**
- * Value Object para el nombre de usuario.
- * Representa un nombre válido que cumple con las reglas de negocio.
- *
- * REGLAS DE VALIDACIÓN:
- * - No puede estar vacío
- * - Longitud mínima: 3 caracteres
- * - Longitud máxima: 50 caracteres
- */
 final class UserName
 {
     private string $value;
@@ -29,20 +21,20 @@ final class UserName
     {
         $value = trim($value);
         
-        // Validación completa en un solo lugar
-        if (empty($value) || mb_strlen($value) < 3 || mb_strlen($value) > 50) {
-            throw new InvalidUserNameException();
+        // Primero verificar si está vacío
+        if (empty($value)) {
+            throw new EmptyUserNameException();
         }
-
+        
         return new self($value);
     }
 
     private function ensureIsValidUserName(string $value): void
     {
-        // Ya validado en fromString, pero por si acaso
         $length = mb_strlen($value);
 
-        if (empty($value) || $length < 3 || $length > 50) {
+        // Solo validar longitud (ya verificamos vacío en fromString)
+        if ($length < 3 || $length > 100) {
             throw new InvalidUserNameException();
         }
     }
