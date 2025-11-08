@@ -22,7 +22,7 @@ final class RegisterUserController
 
     public function __invoke(RegisterRequest $request): JsonResponse
     {
-        // Los datos ya están validados por RegisterRequest (validaciones básicas de Laravel)
+        // Los datos ya están validados por RegisterRequest (primera línea de defensa)
         $validatedData = $request->validated();
         
         // El caso de uso maneja la lógica de negocio y lanza excepciones si es necesario
@@ -33,7 +33,7 @@ final class RegisterUserController
             'message' => __('messages.user.registered_success'),
             'user' => [
                 'id' => $user->id()->value(),
-                'name' => $user->name(),
+                'name' => $user->name()->value(),
                 'email' => $user->email()->value(),
             ]
         ], 201);
