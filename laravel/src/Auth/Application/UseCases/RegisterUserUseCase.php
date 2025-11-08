@@ -14,9 +14,12 @@ use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
 
 final class RegisterUserUseCase implements RegisterUserPort
 {
-    public function __construct(
-        private readonly UserRepository $userRepository
-    ) {}
+    private readonly UserRepository $userRepository;
+
+    public function __construct( UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
 
     public function execute(array $userData): User
     {
@@ -25,7 +28,7 @@ final class RegisterUserUseCase implements RegisterUserPort
         $email = UserEmail::fromString($userData['email'] ?? '');
         $password = UserPassword::fromString($userData['password'] ?? '');
 
-        // 2. Verificar que el email no esté registrado
+        // 2. Verificar que el email no esté registrado (mediante llamada al puerto de salida)
         if ($this->userRepository->exists($email)) {
             throw new EmailAlreadyExistsException($email->value());
         }
@@ -33,7 +36,7 @@ final class RegisterUserUseCase implements RegisterUserPort
         // 3. Crear entidad User
         $user = User::create($name, $email, $password);
 
-        // 4. Persistir usuario
+        // 4. Persistir usuario (mediante llamada al puerto de salida)
         $this->userRepository->save($user);
 
         return $user;

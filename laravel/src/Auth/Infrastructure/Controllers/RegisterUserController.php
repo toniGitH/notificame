@@ -34,8 +34,7 @@ final class RegisterUserController extends Controller
         // Obtener datos validados (array con name, email, password, password_confirmation)
         $validatedData = $request->validated();
 
-        // Llamada al puerto del caso de uso.
-        // Según tu interfaz RegisterUserPort::execute(array $userData): User
+        // Llamada al puerto del caso de uso (Puerto de entrada).
         $user = $this->registerUserPort->execute($validatedData);
 
         return new JsonResponse([
