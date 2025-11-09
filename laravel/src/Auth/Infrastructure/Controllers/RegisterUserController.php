@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Src\Auth\Infrastructure\Controllers;
 
-use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\RegisterUserRequest;
 use Src\Auth\Application\Ports\In\RegisterUserPort;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
@@ -26,10 +26,10 @@ final class RegisterUserController extends Controller
     /**
      * Invocable controller para registrar un usuario.
      *
-     * @param RegisterRequest $request
+     * @param RegisterUserRequest $request
      * @return JsonResponse
      */
-    public function __invoke(RegisterRequest $request): JsonResponse
+    public function __invoke(RegisterUserRequest $request): JsonResponse
     {
         // Obtener datos validados (array con name, email, password, password_confirmation)
         $validatedData = $request->validated();

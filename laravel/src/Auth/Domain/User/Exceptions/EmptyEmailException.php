@@ -8,6 +8,6 @@ final class EmptyEmailException extends InvalidValueObjectException
 {
     public function __construct()
     {
-        parent::__construct(__('messages.user.EMPTY_EMAIL'));
+        parent::__construct('messages.user.EMPTY_EMAIL');
     }
 }

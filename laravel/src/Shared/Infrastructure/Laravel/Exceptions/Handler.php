@@ -10,12 +10,10 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
-use Src\Auth\Domain\User\Exceptions\InvalidValueObjectException;
-use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
-use Src\Auth\Domain\User\Exceptions\EmptyEmailException;
-use Src\Auth\Domain\User\Exceptions\EmptyPasswordException;
-use Src\Auth\Domain\User\Exceptions\EmptyUserNameException;
 use Src\Shared\Domain\Exceptions\DomainException;
+use Src\Shared\Domain\Exceptions\InvalidValueObjectException;
+use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
+use Src\Shared\Domain\Exceptions\MultipleDomainException;
 
 final class Handler
 {
@@ -34,7 +32,7 @@ final class Handler
         if ($e instanceof EmailAlreadyExistsException) {
             return $this->errorResponse(
                 __('messages.validation.error'), 
-                ['email' => [$e->getMessage()]], 
+                ['email' => [__($e->getMessage())]], 
                 422
             );
         }
@@ -49,19 +47,28 @@ final class Handler
             );
         }
 
-        // 4) Otros errores de dominio
+        // 4) Excepciones compuestas de dominio (MultipleDomainException)
+        if ($e instanceof MultipleDomainException) {
+            return $this->errorResponse(
+                __('messages.validation.error'),
+                $e->errors(),
+                422
+            );
+        }
+
+        // 5) Otros errores de dominio
         if ($e instanceof DomainException) {
             return $this->errorResponse($e->getMessage(), [], 400);
         }
 
-        // 5) HTTP exceptions
+        // 6) HTTP exceptions
         if ($e instanceof HttpExceptionInterface) {
             return response()->json([
                 'message' => $e->getMessage() ?: __('messages.unexpected_error')
             ], $e->getStatusCode());
         }
 
-        // 6) Error inesperado
+        // 7) Error inesperado
         return null;
     }
 

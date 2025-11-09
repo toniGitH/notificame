@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Auth\Domain\User\Exceptions;
+namespace Src\Shared\Domain\Exceptions;
 
 use Src\Shared\Domain\Exceptions\DomainException;
 

@@ -8,6 +8,6 @@ final class InvalidPasswordException extends InvalidValueObjectException
 {
     public function __construct()
     {
-        parent::__construct(__('messages.user.INVALID_PASSWORD'));
+        parent::__construct('messages.user.INVALID_PASSWORD');
     }
 }

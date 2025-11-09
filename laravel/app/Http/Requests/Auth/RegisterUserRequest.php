@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 
-final class RegisterRequest extends FormRequest
+final class RegisterUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -20,7 +20,13 @@ final class RegisterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:100'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:100'],
+            'email' => [
+            'required',
+            'string',
+            'email:rfc,dns',
+            'max:100',
+            'unique:users,email',
+        ],
             'password' => [
                 'required',
                 'string',
@@ -39,6 +45,7 @@ final class RegisterRequest extends FormRequest
             'name.required' => __('messages.user.EMPTY_NAME'),
             'name.min' => __('messages.user.INVALID_USER_NAME'),
             'name.max' => __('messages.user.INVALID_USER_NAME'),
+            'email.unique' => __('messages.user.EMAIL_ALREADY_EXISTS'),
 
             // Email
             'email.required' => __('messages.user.EMPTY_EMAIL'),
@@ -58,7 +65,6 @@ final class RegisterRequest extends FormRequest
     {
         $errors = $validator->errors()->toArray();
         
-        // Consolidar: solo tomar el primer mensaje de cada campo
         $consolidatedErrors = [];
         foreach ($errors as $field => $messages) {
             $consolidatedErrors[$field] = [reset($messages)];

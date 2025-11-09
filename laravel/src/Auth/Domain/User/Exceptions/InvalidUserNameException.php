@@ -8,6 +8,6 @@ final class InvalidUserNameException extends InvalidValueObjectException
 {
     public function __construct()
     {
-        parent::__construct(__('messages.user.INVALID_USER_NAME'));
+        parent::__construct('messages.user.INVALID_USER_NAME');
     }
 }

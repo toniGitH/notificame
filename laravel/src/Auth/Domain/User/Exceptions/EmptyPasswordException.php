@@ -8,6 +8,6 @@ final class EmptyPasswordException extends InvalidValueObjectException
 {
     public function __construct()
     {
-        parent::__construct(__('messages.user.EMPTY_PASSWORD'));
+        parent::__construct('messages.user.EMPTY_PASSWORD');
     }
 }
