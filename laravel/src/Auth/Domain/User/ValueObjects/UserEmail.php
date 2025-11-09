@@ -32,7 +32,7 @@ final class UserEmail
         
         // Luego verificar formato
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidEmailException($email);
+            throw new InvalidEmailException();
         }
     }
 

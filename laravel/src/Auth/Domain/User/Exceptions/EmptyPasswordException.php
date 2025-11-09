@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Src\Auth\Domain\User\Exceptions;
 
+use Src\Shared\Domain\Exceptions\InvalidValueObjectException;
+
 final class EmptyPasswordException extends InvalidValueObjectException
 {
     public function __construct()
