@@ -23,7 +23,7 @@ final class RegisterUserRequest extends FormRequest
             'email' => [
             'required',
             'string',
-            'email:rfc,dns',
+            'email:filter',
             'max:100',
             'unique:users,email',
         ],

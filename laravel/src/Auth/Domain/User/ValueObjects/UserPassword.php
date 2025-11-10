@@ -9,7 +9,7 @@ use Src\Auth\Domain\User\Exceptions\InvalidPasswordException;
 
 final class UserPassword
 {
-    private const REGEX = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|;:\'",.<>\/?¿]).+$/';
+    private const REGEX = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|;:\'",.<>\/?¿])/';
 
     private string $value;
 
@@ -27,12 +27,15 @@ final class UserPassword
     private function ensureIsValidPassword(string $password): void
     {
         // Primero verificar si está vacío
-        if (empty($password)) {
+        if (trim($password) === '') {
             throw new EmptyPasswordException();
         }
         
-        // Luego verificar formato
-        if (strlen($password) < 8 || !preg_match(self::REGEX, $password)) {
+        // Después, verificar longitud mínima, regex y no permitir espacios al inicio/final
+        if (strlen($password) < 8 
+            || !preg_match(self::REGEX, $password) 
+            || $password !== trim($password)
+        ) {
             throw new InvalidPasswordException();
         }
     }

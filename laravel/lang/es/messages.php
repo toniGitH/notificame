@@ -11,7 +11,7 @@ return [
         'registered_success' => 'Usuario registrado exitosamente.',
         'EMAIL_ALREADY_EXISTS' => 'El correo electrónico que has teclado ya existe. Debes elegir otro',
         'EMPTY_USER_ID' => 'Error interno: ID de usuario no generado.',
-        'INVALID_USER_ID_FORMAT' => 'El ID de usuario tiene un formato inválido: :value',
+        'INVALID_USER_ID_FORMAT' => 'El ID de usuario tiene un formato inválido.',
         
         // Campos vacíos
         'EMPTY_EMAIL' => 'El campo email es obligatorio.',

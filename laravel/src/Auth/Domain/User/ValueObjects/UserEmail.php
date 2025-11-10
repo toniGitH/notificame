@@ -34,6 +34,9 @@ final class UserEmail
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidEmailException();
         }
+
+        // En este método no se puede validar si el email existe o no, porque eso implicaría consulta a la base
+        // de datos, es decir, que esta clase estaría acoplada al sistema de persistencia, y eso, en DDD y hexagonal, no puede pasar dentro del domain
     }
 
     public function value(): string
