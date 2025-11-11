@@ -61,7 +61,7 @@ final class RegisterUserRequest extends FormRequest
         ];
     }
 
-    protected function failedValidation(Validator $validator)
+    /* protected function failedValidation(Validator $validator)
     {
         $errors = $validator->errors()->toArray();
         
@@ -76,5 +76,5 @@ final class RegisterUserRequest extends FormRequest
                 'errors' => $consolidatedErrors
             ], 422)
         );
-    }
+    } */
 }

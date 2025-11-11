@@ -12,7 +12,6 @@ use Throwable;
 
 use Src\Shared\Domain\Exceptions\DomainException;
 use Src\Shared\Domain\Exceptions\InvalidValueObjectException;
-use Src\Auth\Domain\User\Exceptions\EmailAlreadyExistsException;
 use Src\Shared\Domain\Exceptions\MultipleDomainException;
 
 final class Handler
@@ -28,40 +27,31 @@ final class Handler
             );
         }
 
-        // 2) Email duplicado
-        if ($e instanceof EmailAlreadyExistsException) {
-            return $this->errorResponse(
-                __('messages.validation.error'), 
-                ['email' => [__($e->getMessage())]], 
-                422
-            );
-        }
-
-        // 3) Excepciones de ValueObjects (captura genérica)
+        // 2) Excepciones de ValueObjects (captura genérica)
         if ($e instanceof InvalidValueObjectException) {
             $field = $this->guessFieldFromException($e);
             return $this->errorResponse(
                 __('messages.validation.error'), 
-                [$field => [$e->getMessage()]], 
+                [$field => [__($e->getMessage())]], 
                 422
             );
         }
 
-        // 4) Excepciones compuestas de dominio (MultipleDomainException)
+        // 3) Excepciones compuestas de dominio (MultipleDomainException, incluye email duplicado)
         if ($e instanceof MultipleDomainException) {
             return $this->errorResponse(
                 __('messages.validation.error'),
-                $e->errors(),
+                $this->translateErrors($e->errors()),
                 422
             );
         }
 
-        // 5) Otros errores de dominio
+        // 4) Otros errores de dominio
         if ($e instanceof DomainException) {
             return $this->errorResponse($e->getMessage(), [], 400);
         }
 
-        // 6) HTTP exceptions
+        // 5) HTTP exceptions
         if ($e instanceof HttpExceptionInterface) {
             return response()->json([
                 'message' => $e->getMessage() ?: __('messages.unexpected_error')
@@ -78,6 +68,17 @@ final class Handler
             'message' => $message,
             'errors' => $errors
         ], $statusCode);
+    }
+
+    private function translateErrors(array $errors): array
+    {
+        $translated = [];
+        
+        foreach ($errors as $field => $messages) {
+            $translated[$field] = array_map(fn($msg) => __($msg), $messages);
+        }
+        
+        return $translated;
     }
 
     private function guessFieldFromException(Throwable $e): string
