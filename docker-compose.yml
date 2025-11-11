@@ -1,4 +1,5 @@
 services:
+  # Contenedor para la base de datos MySQL para desarrollo
   mysql:
     image: mysql:8.0
     container_name: notificame-mysql
@@ -12,6 +13,25 @@ services:
       - "3700:3306"
     volumes:
       - notificame_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  # Contenedor para la base de datos MySQL para tests (independiente de la base de datos de desarrollo)
+  mysql_test:
+    image: mysql:8.0
+    container_name: notificame-mysql-test
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_TEST_DATABASE:-app_testing}
+      MYSQL_USER: ${MYSQL_TEST_USER:-app}
+      MYSQL_PASSWORD: ${MYSQL_TEST_PASSWORD:-app}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_TEST_ROOT_PASSWORD:-root}
+    ports:
+      - "3701:3306"
+    volumes:
+      - notificame_db_test_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -96,5 +116,9 @@ services:
     environment:
       SWAGGER_JSON: /usr/share/nginx/html/docs/openapi.yml
 
+# Volúmenes persistentes para las bases de datos
 volumes:
+  # Datos de MySQL para desarrollo
   notificame_db_data:
+  # Datos de MySQL para tests (independiente del volumen de desarrollo)
+  notificame_db_test_data:
