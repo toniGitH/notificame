@@ -27,6 +27,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE REGISTRO EXITOSO
     // ============================================
 
+    /**
+     * Comprueba que un usuario puede registrarse correctamente con todos los datos válidos
+     */
     public function test_can_register_user_with_valid_data(): void
     {
         $userData = [
@@ -67,6 +70,9 @@ class RegisterUserControllerTest extends TestCase
         );
     }
 
+    /**
+     * Comprueba que la contraseña se almacena hasheada y no en texto plano
+     */
     public function test_password_is_hashed_in_database(): void
     {
         $userData = [
@@ -90,6 +96,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertTrue(Hash::check('SecurePass123!', $user->password));
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con un nombre de exactamente 3 caracteres (mínimo permitido)
+     */
     public function test_can_register_with_minimum_valid_name_length(): void
     {
         $userData = [
@@ -105,6 +114,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['name' => 'Joe']);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con un nombre de exactamente 100 caracteres (máximo permitido)
+     */
     public function test_can_register_with_maximum_valid_name_length(): void
     {
         $longName = str_repeat('a', 100); // 100 caracteres (máximo)
@@ -122,6 +134,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['name' => $longName]);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con una contraseña de exactamente 8 caracteres (mínimo permitido)
+     */
     public function test_can_register_with_minimum_valid_password_length(): void
     {
         $userData = [
@@ -136,6 +151,9 @@ class RegisterUserControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con una contraseña de exactamente 50 caracteres (máximo permitido)
+     */
     public function test_can_register_with_maximum_valid_password_length(): void
     {
         // 50 caracteres con todos los requisitos
@@ -153,6 +171,9 @@ class RegisterUserControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con una contraseña que contiene todos los caracteres especiales permitidos
+     */
     public function test_can_register_with_all_special_characters_in_password(): void
     {
         $userData = [
@@ -167,6 +188,9 @@ class RegisterUserControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con un email de exactamente 100 caracteres (máximo permitido)
+     */
     public function test_can_register_with_maximum_valid_email_length(): void
     {
         // Email con una parte locas de 64 caracteres (maximo permitido por RFC)
@@ -186,6 +210,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => $email]);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con caracteres unicode en el nombre (tildes, eñes, etc.)
+     */
     public function test_can_register_with_unicode_characters_in_name(): void
     {
         $userData = [
@@ -201,6 +228,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['name' => 'José María Ñoño']);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con números en el nombre
+     */
     public function test_can_register_with_numbers_in_name(): void
     {
         $userData = [
@@ -216,6 +246,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['name' => 'User123']);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con caracteres especiales en el nombre (apóstrofes, guiones)
+     */
     public function test_can_register_with_special_characters_in_name(): void
     {
         $userData = [
@@ -235,6 +268,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE VALIDACIÓN - CAMPO NAME
     // ============================================
 
+    /**
+     * Comprueba que no se puede registrar un usuario sin enviar el campo name
+     */
     public function test_cannot_register_without_name(): void
     {
         $userData = [
@@ -254,6 +290,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo name vacío
+     */
     public function test_cannot_register_with_empty_name(): void
     {
         $userData = [
@@ -271,6 +310,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con un nombre de menos de 3 caracteres
+     */
     public function test_cannot_register_with_name_too_short(): void
     {
         $userData = [
@@ -288,6 +330,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con un nombre de más de 100 caracteres
+     */
     public function test_cannot_register_with_name_too_long(): void
     {
         $userData = [
@@ -305,6 +350,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo name como null
+     */
     public function test_cannot_register_with_null_name(): void
     {
         $userData = [
@@ -322,6 +370,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con un nombre numérico si tiene la longitud válida
+     */
     public function test_register_with_integer_name_should_succeed_if_length_is_valid(): void
     {
         // Nota importante:
@@ -348,6 +399,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['name' => '123']);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo name como array
+     */
     public function test_cannot_register_with_name_as_array(): void
     {
         $userData = [
@@ -369,6 +423,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE VALIDACIÓN - CAMPO EMAIL
     // ============================================
 
+    /**
+     * Comprueba que no se puede registrar un usuario sin enviar el campo email
+     */
     public function test_cannot_register_without_email(): void
     {
         $userData = [
@@ -385,6 +442,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo email vacío
+     */
     public function test_cannot_register_with_empty_email(): void
     {
         $userData = [
@@ -402,6 +462,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con emails de formato inválido
+     */
     public function test_cannot_register_with_invalid_email_format(): void
     {
         $invalidEmails = [
@@ -436,6 +499,9 @@ class RegisterUserControllerTest extends TestCase
         }
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con un email de más de 100 caracteres
+     */
     public function test_cannot_register_with_email_too_long(): void
     {
         $localPart = str_repeat('a', 89);
@@ -456,6 +522,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con un email que ya existe en la base de datos
+     */
     public function test_cannot_register_with_duplicate_email(): void
     {
         $userData = [
@@ -482,6 +551,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 1);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con un email duplicado independientemente de mayúsculas/minúsculas
+     */
     public function test_cannot_register_with_duplicate_email_case_insensitive(): void
     {
         if ($this->isSqlite()) {
@@ -512,6 +584,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 1);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo email como null
+     */
     public function test_cannot_register_with_null_email(): void
     {
         $userData = [
@@ -529,6 +604,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo email como array
+     */
     public function test_cannot_register_with_email_as_array(): void
     {
         $userData = [
@@ -546,6 +624,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con un email que contiene el signo más (+)
+     */
     public function test_can_register_with_plus_sign_in_email(): void
     {
         $userData = [
@@ -561,6 +642,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'john+test@example.com']);
     }
 
+    /**
+     * Comprueba que se puede registrar un usuario con un email que contiene subdominios
+     */
     public function test_can_register_with_subdomain_in_email(): void
     {
         $userData = [
@@ -580,6 +664,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE VALIDACIÓN - CAMPO PASSWORD
     // ============================================
 
+    /**
+     * Comprueba que no se puede registrar un usuario sin enviar el campo password
+     */
     public function test_cannot_register_without_password(): void
     {
         $userData = [
@@ -596,6 +683,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo password vacío
+     */
     public function test_cannot_register_with_empty_password(): void
     {
         $userData = [
@@ -613,6 +703,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña de menos de 8 caracteres
+     */
     public function test_cannot_register_with_password_too_short(): void
     {
         $userData = [
@@ -630,6 +723,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña de exactamente 7 caracteres
+     */
     public function test_cannot_register_with_password_exactly_seven_characters(): void
     {
         $userData = [
@@ -647,6 +743,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña de más de 50 caracteres
+     */
     public function test_cannot_register_with_password_too_long(): void
     {
         $longPassword = 'Aa1!' . str_repeat('x', 47); // 51 caracteres
@@ -666,6 +765,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña sin letras mayúsculas
+     */
     public function test_cannot_register_with_password_missing_uppercase(): void
     {
         $userData = [
@@ -683,6 +785,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña sin letras minúsculas
+     */
     public function test_cannot_register_with_password_missing_lowercase(): void
     {
         $userData = [
@@ -700,6 +805,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña sin números
+     */
     public function test_cannot_register_with_password_missing_number(): void
     {
         $userData = [
@@ -717,6 +825,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña sin caracteres especiales
+     */
     public function test_cannot_register_with_password_missing_special_character(): void
     {
         $userData = [
@@ -734,6 +845,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña que solo contenga letras minúsculas
+     */
     public function test_cannot_register_with_password_only_lowercase(): void
     {
         $userData = [
@@ -751,6 +865,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña que solo contenga letras mayúsculas
+     */
     public function test_cannot_register_with_password_only_uppercase(): void
     {
         $userData = [
@@ -768,6 +885,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña que solo contenga números
+     */
     public function test_cannot_register_with_password_only_numbers(): void
     {
         $userData = [
@@ -785,6 +905,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con una contraseña que solo contenga caracteres especiales
+     */
     public function test_cannot_register_with_password_only_special_characters(): void
     {
         $userData = [
@@ -802,6 +925,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario sin enviar el campo password_confirmation
+     */
     public function test_cannot_register_without_password_confirmation(): void
     {
         $userData = [
@@ -818,6 +944,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario cuando password y password_confirmation no coinciden
+     */
     public function test_cannot_register_with_mismatched_password_confirmation(): void
     {
         $userData = [
@@ -835,6 +964,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo password_confirmation vacío
+     */
     public function test_cannot_register_with_empty_password_confirmation(): void
     {
         $userData = [
@@ -852,6 +984,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo password como null
+     */
     public function test_cannot_register_with_null_password(): void
     {
         $userData = [
@@ -869,6 +1004,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con el campo password como array
+     */
     public function test_cannot_register_with_password_as_array(): void
     {
         $userData = [
@@ -886,6 +1024,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que la validación de password_confirmation es sensible a mayúsculas/minúsculas
+     */
     public function test_password_confirmation_is_case_sensitive(): void
     {
         $userData = [
@@ -907,6 +1048,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE VALIDACIÓN MÚLTIPLE
     // ============================================
 
+    /**
+     * Comprueba que no se puede registrar un usuario cuando todos los campos están vacíos
+     */
     public function test_cannot_register_with_all_fields_empty(): void
     {
         $userData = [
@@ -937,6 +1081,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario sin enviar ningún campo
+     */
     public function test_cannot_register_with_all_fields_missing(): void
     {
         $userData = [];
@@ -956,6 +1103,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que se devuelven errores de validación para múltiples campos simultáneamente
+     */
     public function test_cannot_register_with_multiple_validation_errors(): void
     {
         $userData = [
@@ -986,6 +1136,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba que solo se devuelve el primer error por campo cuando hay múltiples problemas
+     */
     public function test_validation_returns_only_first_error_per_field(): void
     {
         // Un campo puede tener múltiples problemas, pero Laravel con tu configuración
@@ -1006,6 +1159,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    /**
+     * Comprueba que se devuelven errores tanto de email duplicado como de contraseña inválida simultáneamente
+     */
     public function test_email_uniqueness_and_password_validation_both_fail(): void
     {
         // Primero registrar un usuario
@@ -1039,6 +1195,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE CASOS EDGE Y SEGURIDAD
     // ============================================
 
+    /**
+     * Comprueba que la contraseña no se devuelve en la respuesta JSON bajo ningún formato
+     */
     public function test_response_does_not_contain_password_in_any_form(): void
     {
         $userData = [
@@ -1062,6 +1221,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertStringNotContainsString('password', $jsonString);
     }
 
+    /**
+     * Comprueba que no se devuelven campos sensibles de la base de datos en la respuesta
+     */
     public function test_response_does_not_contain_sensitive_database_fields(): void
     {
         $userData = [
@@ -1085,6 +1247,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertArrayNotHasKey('email_verified_at', $user);
     }
 
+    /**
+     * Comprueba que campos adicionales no esperados se ignoran durante el registro
+     */
     public function test_cannot_register_with_additional_unexpected_fields(): void
     {
         $userData = [
@@ -1112,6 +1277,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertArrayNotHasKey('is_active', $userArray);
     }
 
+    /**
+     * Comprueba que intentos de inyección SQL en el nombre son escapados correctamente
+     */
     public function test_cannot_register_with_sql_injection_in_name(): void
     {
         $userData = [
@@ -1133,6 +1301,9 @@ class RegisterUserControllerTest extends TestCase
         ]);
     }
 
+    /**
+     * Comprueba que intentos de inyección SQL en el email no se ejecutan y se almacenan como string seguro
+     */
     public function test_sql_injection_in_email_is_not_executed(): void
     {
         $userData = [
@@ -1148,6 +1319,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => "admin'--@example.com"]);
     }
 
+    /**
+     * Comprueba que código XSS en el nombre se almacena sin ejecutarse
+     */
     public function test_cannot_register_with_xss_in_name(): void
     {
         $userData = [
@@ -1175,6 +1349,9 @@ class RegisterUserControllerTest extends TestCase
         ]);
     }
 
+    /**
+     * Comprueba que no se puede registrar un usuario con un nombre que solo contenga espacios
+     */
     public function test_cannot_register_with_name_containing_only_spaces(): void
     {
         $userData = [
@@ -1190,6 +1367,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    /**
+     * Comprueba el comportamiento del sistema con respecto a espacios al inicio y final del nombre
+     */
     public function test_name_is_trimmed_before_saving(): void
     {
         $userData = [
@@ -1214,6 +1394,9 @@ class RegisterUserControllerTest extends TestCase
         );
     }
 
+    /**
+     * Comprueba que el email se almacena tal cual se envía, sin convertir a minúsculas
+     */
     public function test_email_is_stored_as_provided_not_lowercased(): void
     {
         $userData = [
@@ -1238,6 +1421,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE MÚLTIPLES REGISTROS
     // ============================================
 
+    /**
+     * Comprueba que múltiples usuarios pueden registrarse exitosamente de forma consecutiva
+     */
     public function test_multiple_users_can_register_successfully(): void
     {
         $users = [
@@ -1273,6 +1459,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertCount(3, array_unique($userIds));
     }
 
+    /**
+     * Comprueba que se pueden registrar usuarios con el mismo nombre pero diferentes emails
+     */
     public function test_can_register_users_with_same_name_but_different_emails(): void
     {
         $user1 = [
@@ -1298,6 +1487,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseCount('users', 2);
     }
 
+    /**
+     * Comprueba que usuarios con la misma contraseña generan hashes diferentes
+     */
     public function test_can_register_users_with_same_password(): void
     {
         $user1 = [
@@ -1331,6 +1523,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE FORMATO DE RESPUESTA
     // ============================================
 
+    /**
+     * Comprueba que el mensaje de éxito en el registro es correcto y está traducido
+     */
     public function test_successful_registration_returns_correct_message(): void
     {
         $userData = [
@@ -1352,6 +1547,9 @@ class RegisterUserControllerTest extends TestCase
         $response->assertJsonPath('message', $expected);
     }
 
+    /**
+     * Comprueba que el mensaje de error de validación es correcto y está traducido
+     */
     public function test_validation_error_returns_correct_message(): void
     {
         $userData = [
@@ -1371,6 +1569,9 @@ class RegisterUserControllerTest extends TestCase
         $response->assertJsonPath('message', $expected);
     }
 
+    /**
+     * Comprueba que la respuesta de registro exitoso tiene la estructura JSON correcta
+     */
     public function test_response_has_correct_json_structure(): void
     {
         $userData = [
@@ -1397,6 +1598,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertCount(3, $user, 'El objeto user debería tener exactamente 3 campos');
     }
 
+    /**
+     * Comprueba que la respuesta de error de validación tiene la estructura JSON correcta
+     */
     public function test_validation_error_has_correct_json_structure(): void
     {
         $userData = [
@@ -1419,6 +1623,9 @@ class RegisterUserControllerTest extends TestCase
             ]);
     }
 
+    /**
+     * Comprueba que cada campo de error en la respuesta es un array de mensajes
+     */
     public function test_each_error_field_is_an_array_of_messages(): void
     {
         $userData = [
@@ -1445,6 +1652,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE COMPORTAMIENTO HTTP
     // ============================================
 
+    /**
+     * Comprueba que el endpoint acepta peticiones con Content-Type application/json
+     */
     public function test_request_accepts_json_content_type(): void
     {
         $userData = [
@@ -1462,6 +1672,9 @@ class RegisterUserControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
+    /**
+     * Comprueba que la respuesta tiene el Content-Type correcto (application/json)
+     */
     public function test_response_has_correct_content_type(): void
     {
         $userData = [
@@ -1477,6 +1690,9 @@ class RegisterUserControllerTest extends TestCase
             ->assertHeader('Content-Type', 'application/json');
     }
 
+    /**
+     * Comprueba que el endpoint solo acepta el método POST y rechaza otros métodos HTTP
+     */
     public function test_endpoint_only_accepts_post_method(): void
     {
         $userData = [
@@ -1503,6 +1719,9 @@ class RegisterUserControllerTest extends TestCase
         $response->assertStatus(405);
     }
 
+    /**
+     * Comprueba que un registro exitoso devuelve específicamente el código de estado 201 Created
+     */
     public function test_successful_registration_returns_201_status(): void
     {
         $userData = [
@@ -1519,6 +1738,9 @@ class RegisterUserControllerTest extends TestCase
         $response->assertCreated();
     }
 
+    /**
+     * Comprueba que un error de validación devuelve específicamente el código de estado 422 Unprocessable Entity
+     */
     public function test_validation_error_returns_422_status(): void
     {
         $userData = [
@@ -1539,6 +1761,9 @@ class RegisterUserControllerTest extends TestCase
     // TESTS DE CASOS LÍMITE DE CARACTERES
     // ============================================
 
+    /**
+     * Comprueba que se puede registrar un usuario con emojis en el nombre
+     */
     public function test_can_register_with_emoji_in_name(): void
     {
         $userData = [
@@ -1556,6 +1781,9 @@ class RegisterUserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'emoji@example.com']);
     }
 
+    /**
+     * Comprueba que se pueden registrar usuarios con nombres en varios idiomas y sistemas de escritura
+     */
     public function test_can_register_with_various_international_characters(): void
     {
         $names = [
