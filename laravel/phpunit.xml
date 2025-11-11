@@ -24,6 +24,7 @@
         </include>
     </source>
     <!-- Usar estas variables de entorno para testing en MySQL app_testing -->
+    <!-- Ejecución más lenta, pero todos los métodos están pensados para un entorno con base de datos MySQL -->
     <!-- <php>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_CONNECTION" value="mysql"/>
@@ -34,6 +35,7 @@
         <env name="DB_PASSWORD" value="app"/>
     </php> -->
     <!-- Usar estas variables de entorno para testing en SQLite en memoria -->
+    <!-- Ejecución más rápida, pero algún método no es compatible con SQLite y se omite (skipped) -->
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>

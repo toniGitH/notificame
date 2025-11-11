@@ -24,7 +24,6 @@ final class RegisterUserRequest extends FormRequest
             'required',
             'string',
             'email:filter',
-            'max:100',
             'unique:users,email',
         ],
             'password' => [
