@@ -105,6 +105,20 @@ services:
       - ./react:/app
     command: sh -lc "npm install && npm run dev -- --host"
 
+  # Servicio para compilar la documentación Swagger
+  swagger-builder:
+    image: node:18-alpine
+    container_name: notificame-swagger-builder
+    working_dir: /docs
+    volumes:
+      - ./docs:/docs
+    command: >
+      sh -c "npm install -g @apidevtools/swagger-cli &&
+             swagger-cli bundle /docs/openapi.source.yml --outfile /docs/openapi.yml --type yaml &&
+             echo '✅ Documentación Swagger compilada' &&
+             tail -f /dev/null"
+    restart: unless-stopped
+
   swagger-ui:
     image: swaggerapi/swagger-ui:latest
     container_name: notificame-swagger
@@ -115,6 +129,8 @@ services:
       - ./docs:/usr/share/nginx/html/docs:ro
     environment:
       SWAGGER_JSON: /usr/share/nginx/html/docs/openapi.yml
+    depends_on:
+      - swagger-builder
 
 # Volúmenes persistentes para las bases de datos
 volumes:

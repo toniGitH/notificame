@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  title: API Notificame
+  version: 1.0.0
+  description: |
+    API REST para la aplicación de notificaciones.
+    
+    Esta API permite gestionar usuarios, autenticación y notificaciones.
+    
+    **Características:**
+    - Arquitectura hexagonal con DDD
+    - Validaciones completas en cada endpoint
+    - Respuestas en formato JSON
+    - Mensajes de error descriptivos
+
+  contact:
+    name: Soporte API Notificame
+    email: soporte@notificame.com
+
+servers:
+  - url: http://localhost:8988/api
+    description: API de desarrollo
+
+paths:
+  /auth/register:
+    $ref: './paths/auth/register.yml'

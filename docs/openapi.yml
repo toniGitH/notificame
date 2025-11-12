@@ -4,23 +4,20 @@ info:
   version: 1.0.0
   description: |
     API REST para la aplicación de notificaciones.
-    
+
     Esta API permite gestionar usuarios, autenticación y notificaciones.
-    
+
     **Características:**
     - Arquitectura hexagonal con DDD
     - Validaciones completas en cada endpoint
     - Respuestas en formato JSON
     - Mensajes de error descriptivos
-
   contact:
     name: Soporte API Notificame
     email: soporte@notificame.com
-
 servers:
-  - url: http://localhost:8988/api
+  - url: 'http://localhost:8988/api'
     description: API de desarrollo
-
 paths:
   /auth/register:
     post:
@@ -35,13 +32,12 @@ paths:
         - Email: formato válido, único en el sistema
         - Contraseña: mínimo 8 caracteres, máximo 50, debe incluir mayúscula, minúscula, número y carácter especial
         - Confirmación de contraseña: debe coincidir con la contraseña
-        
+
         **Nota sobre idiomas:**
         - Esta documentación está en español, pero los mensajes JSON de la API están en inglés.
         - Si quieres cambiar el idioma de las respuestas de la API, modifica la variable `APP_LOCALE` en tu archivo `.env`:
           - `APP_LOCALE=en` para inglés
           - `APP_LOCALE=es` para español
-
       operationId: registerUser
       requestBody:
         required: true
@@ -95,25 +91,22 @@ paths:
                   email: maria.garcia@example.com
                   password: SecurePass123!
                   password_confirmation: SecurePass123!
-              
               camposVacios:
                 summary: ❌ Todos los campos vacíos
                 description: Simula el envío del formulario sin rellenar ningún campo
                 value:
-                  name: ""
-                  email: ""
-                  password: ""
-                  password_confirmation: ""
-              
+                  name: ''
+                  email: ''
+                  password: ''
+                  password_confirmation: ''
               nombreVacio:
                 summary: ❌ Nombre vacío
                 description: El campo nombre está vacío
                 value:
-                  name: ""
+                  name: ''
                   email: juan.perez@example.com
                   password: Password123!
                   password_confirmation: Password123!
-              
               nombreMuyCorto:
                 summary: ❌ Nombre muy corto
                 description: El nombre tiene menos de 3 caracteres
@@ -122,16 +115,14 @@ paths:
                   email: juan.perez@example.com
                   password: Password123!
                   password_confirmation: Password123!
-              
               emailVacio:
                 summary: ❌ Email vacío
                 description: El campo email está vacío
                 value:
                   name: Juan Pérez
-                  email: ""
+                  email: ''
                   password: Password123!
                   password_confirmation: Password123!
-              
               emailFormatoInvalido:
                 summary: ❌ Email con formato inválido
                 description: El email no tiene un formato válido (falta @)
@@ -140,16 +131,14 @@ paths:
                   email: juan.perez.example.com
                   password: Password123!
                   password_confirmation: Password123!
-              
               emailSinDominio:
                 summary: ❌ Email sin dominio completo
-                description: El email no tiene un dominio válido (falta .com, .es, etc.)
+                description: 'El email no tiene un dominio válido (falta .com, .es, etc.)'
                 value:
                   name: Juan Pérez
                   email: juan@perez
                   password: Password123!
                   password_confirmation: Password123!
-              
               emailDuplicado:
                 summary: ❌ Email ya registrado
                 description: El email ya existe en la base de datos (prueba con un email que ya hayas registrado)
@@ -158,16 +147,14 @@ paths:
                   email: existing@example.com
                   password: Password123!
                   password_confirmation: Password123!
-              
               passwordVacio:
                 summary: ❌ Contraseña vacía
                 description: El campo contraseña está vacío
                 value:
                   name: Juan Pérez
                   email: juan.perez@example.com
-                  password: ""
-                  password_confirmation: ""
-              
+                  password: ''
+                  password_confirmation: ''
               passwordMuyCorta:
                 summary: ❌ Contraseña muy corta
                 description: La contraseña tiene menos de 8 caracteres
@@ -176,7 +163,6 @@ paths:
                   email: juan.perez@example.com
                   password: Pass1!
                   password_confirmation: Pass1!
-              
               passwordSinMayuscula:
                 summary: ❌ Contraseña sin mayúscula
                 description: La contraseña no contiene ninguna letra mayúscula
@@ -185,7 +171,6 @@ paths:
                   email: juan.perez@example.com
                   password: password123!
                   password_confirmation: password123!
-              
               passwordSinMinuscula:
                 summary: ❌ Contraseña sin minúscula
                 description: La contraseña no contiene ninguna letra minúscula
@@ -194,7 +179,6 @@ paths:
                   email: juan.perez@example.com
                   password: PASSWORD123!
                   password_confirmation: PASSWORD123!
-              
               passwordSinNumero:
                 summary: ❌ Contraseña sin número
                 description: La contraseña no contiene ningún número
@@ -203,7 +187,6 @@ paths:
                   email: juan.perez@example.com
                   password: Password!!!
                   password_confirmation: Password!!!
-              
               passwordSinCaracterEspecial:
                 summary: ❌ Contraseña sin carácter especial
                 description: La contraseña no contiene ningún carácter especial
@@ -212,7 +195,6 @@ paths:
                   email: juan.perez@example.com
                   password: Password123
                   password_confirmation: Password123
-              
               passwordSinLetra:
                 summary: ❌ Contraseña sin letras
                 description: La contraseña solo contiene números y caracteres especiales
@@ -221,7 +203,6 @@ paths:
                   email: juan.perez@example.com
                   password: 12345678!@#
                   password_confirmation: 12345678!@#
-              
               passwordConfirmacionNoCoincide:
                 summary: ❌ Las contraseñas no coinciden
                 description: La confirmación de contraseña no coincide con la contraseña
@@ -230,7 +211,6 @@ paths:
                   email: juan.perez@example.com
                   password: Password123!
                   password_confirmation: DifferentPass456!
-
       responses:
         '201':
           description: Usuario registrado exitosamente
@@ -270,7 +250,6 @@ paths:
                       id: 9d4e8c1a-3b2f-4d5e-8f9a-1b2c3d4e5f6a
                       name: María García López
                       email: maria.garcia@example.com
-
         '422':
           description: Error de validación - Datos inválidos o incompletos
           content:
@@ -300,7 +279,6 @@ paths:
                         - The email field is required.
                       password:
                         - The password field is required.
-                
                 nombreVacio:
                   summary: Nombre vacío
                   value:
@@ -308,7 +286,6 @@ paths:
                     errors:
                       name:
                         - The name field is required.
-                
                 nombreMuyCorto:
                   summary: Nombre muy corto (menos de 3 caracteres)
                   value:
@@ -316,7 +293,6 @@ paths:
                     errors:
                       name:
                         - The name must be between 3 and 100 characters.
-                
                 emailVacio:
                   summary: Email vacío
                   value:
@@ -324,7 +300,6 @@ paths:
                     errors:
                       email:
                         - The email field is required.
-                
                 emailFormatoInvalido:
                   summary: Email con formato inválido
                   value:
@@ -332,7 +307,6 @@ paths:
                     errors:
                       email:
                         - The email has an invalid format. It should be like email@email.com
-                
                 emailYaExiste:
                   summary: Email ya registrado (duplicado)
                   value:
@@ -340,7 +314,6 @@ paths:
                     errors:
                       email:
                         - The email you entered already exists. You must choose another one
-                
                 passwordVacio:
                   summary: Contraseña vacía
                   value:
@@ -348,47 +321,41 @@ paths:
                     errors:
                       password:
                         - The password field is required.
-                
                 passwordMuyCorta:
                   summary: Contraseña muy corta (menos de 8 caracteres)
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
-                
+                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
                 passwordSinMayuscula:
                   summary: Contraseña sin letra mayúscula
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
-                
+                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
                 passwordSinMinuscula:
                   summary: Contraseña sin letra minúscula
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
-                
+                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
                 passwordSinNumero:
                   summary: Contraseña sin número
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
-                
+                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
                 passwordSinLetra:
                   summary: Contraseña sin letras
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
-                
+                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
                 passwordConfirmacionNoCoincide:
                   summary: Confirmación de contraseña no coincide
                   value:
@@ -396,7 +363,6 @@ paths:
                     errors:
                       password:
                         - The password confirmation does not match.
-                
                 erroresMultiples:
                   summary: Múltiples errores de validación
                   value:
@@ -407,8 +373,7 @@ paths:
                       email:
                         - The email has an invalid format. It should be like email@email.com
                       password:
-                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
-
+                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
         '500':
           description: Error interno del servidor
           content:
@@ -425,8 +390,7 @@ paths:
                   summary: Error interno genérico
                   value:
                     message: An unexpected error occurred. Please try again later.
-                
                 errorGeneracionId:
                   summary: Error al generar ID de usuario
                   value:
-                    message: Internal error User ID not generated.
+                    message: 'Internal error: User ID not generated.'
