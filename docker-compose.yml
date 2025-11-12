@@ -113,8 +113,8 @@ services:
     volumes:
       - ./docs:/docs
     command: >
-      sh -c "npm install -g @apidevtools/swagger-cli &&
-             swagger-cli bundle /docs/openapi.source.yml --outfile /docs/openapi.yml --type yaml &&
+      sh -c "npm install -g @redocly/cli &&
+             redocly bundle /docs/openapi.source.yml --output /docs/openapi.yml &&
              echo '✅ Documentación Swagger compilada' &&
              tail -f /dev/null"
     restart: unless-stopped

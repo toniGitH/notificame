@@ -16,7 +16,7 @@ info:
     name: Soporte API Notificame
     email: soporte@notificame.com
 servers:
-  - url: 'http://localhost:8988/api'
+  - url: http://localhost:8988/api
     description: API de desarrollo
 paths:
   /auth/register:
@@ -133,7 +133,7 @@ paths:
                   password_confirmation: Password123!
               emailSinDominio:
                 summary: ❌ Email sin dominio completo
-                description: 'El email no tiene un dominio válido (falta .com, .es, etc.)'
+                description: El email no tiene un dominio válido (falta .com, .es, etc.)
                 value:
                   name: Juan Pérez
                   email: juan@perez
@@ -327,35 +327,35 @@ paths:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
+                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
                 passwordSinMayuscula:
                   summary: Contraseña sin letra mayúscula
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
+                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
                 passwordSinMinuscula:
                   summary: Contraseña sin letra minúscula
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
+                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
                 passwordSinNumero:
                   summary: Contraseña sin número
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
+                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
                 passwordSinLetra:
                   summary: Contraseña sin letras
                   value:
                     message: Validation error. Please check the provided fields.
                     errors:
                       password:
-                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
+                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
                 passwordConfirmacionNoCoincide:
                   summary: Confirmación de contraseña no coincide
                   value:
@@ -373,7 +373,7 @@ paths:
                       email:
                         - The email has an invalid format. It should be like email@email.com
                       password:
-                        - 'The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.'
+                        - The password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
         '500':
           description: Error interno del servidor
           content:
@@ -394,3 +394,4 @@ paths:
                   summary: Error al generar ID de usuario
                   value:
                     message: 'Internal error: User ID not generated.'
+components: {}

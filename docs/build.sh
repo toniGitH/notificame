@@ -5,19 +5,19 @@
 
 echo "📚 Compilando documentación Swagger..."
 
-# Verificar si swagger-cli está instalado
-if ! command -v swagger-cli &> /dev/null
+# Verificar si redocly está instalado
+if ! command -v redocly &> /dev/null
 then
-    echo "❌ swagger-cli no está instalado"
-    echo "Instalando swagger-cli..."
-    npm install -g @apidevtools/swagger-cli
+    echo "❌ @redocly/cli no está instalado"
+    echo "Instalando @redocly/cli..."
+    npm install -g @redocly/cli
 fi
 
 # Directorio del script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Compilar desde openapi.source.yml a openapi.yml
-swagger-cli bundle "$DIR/openapi.source.yml" --outfile "$DIR/openapi.yml" --type yaml
+redocly bundle "$DIR/openapi.source.yml" --output "$DIR/openapi.yml"
 
 if [ $? -eq 0 ]; then
     echo "✅ Documentación compilada correctamente en openapi.yml"
